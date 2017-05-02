@@ -5,6 +5,7 @@ import io.vertx.core.Future;
 
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.StaticHandler;
 
 public class MyFirstVerticle extends AbstractVerticle {
 
@@ -21,6 +22,8 @@ public void start(Future<Void> fut) {
        .end("<h1>Hello from my first Vert.x 3 application</h1>");
  });
 
+      // Serve static resources from the /assets directory
+      router.route("/assets/*").handler(StaticHandler.create("assets"));
  // Create the HTTP server and pass the "accept" method to the request handler.
  vertx
      .createHttpServer()
