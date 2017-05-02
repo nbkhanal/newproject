@@ -4,15 +4,32 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.Json;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class MyFirstVerticle extends AbstractVerticle {
 
+    // Store our product
+    private Map<Integer, Whisky> products = new LinkedHashMap<>();
+    // Create some product
+    private void createSomeData() {
+        Whisky bowmore = new Whisky("Bowmore 15 Years Laimrig", "Scotland, Islay");
+        products.put(bowmore.getId(), bowmore);
+        Whisky talisker = new Whisky("Talisker 57° North", "Scotland, Island");
+        products.put(talisker.getId(), talisker);
+    }
+
   @Override
-public void start(Future<Void> fut) {
- // Create a router object.
- Router router = Router.router(vertx);
+    public void start(Future<Void> fut) {
+      createSomeData();
+     // Create a router object.
+     Router router = Router.router(vertx);
 
  // Bind "/" to our hello message - so we are still compatible.
  router.route("/").handler(routingContext -> {
@@ -24,6 +41,9 @@ public void start(Future<Void> fut) {
 
       // Serve static resources from the /assets directory
       router.route("/assets/*").handler(StaticHandler.create("assets"));
+      router.get("/api/whiskies").handler(this::getAll);
+      router.route("/api/whiskies*").handler(BodyHandler.create());
+      router.post("/api/whiskies").handler(this::addOne);
  // Create the HTTP server and pass the "accept" method to the request handler.
  vertx
      .createHttpServer()
@@ -41,4 +61,22 @@ public void start(Future<Void> fut) {
          }
      );
 }
+
+    private void addOne(RoutingContext routingContext) {
+        final Whisky whisky = Json.decodeValue(routingContext.getBodyAsString(),
+                Whisky.class);
+        products.put(whisky.getId(), whisky);
+        routingContext.response()
+                .setStatusCode(201)
+                .putHeader("content-type", "application/json; charset=utf-8")
+                .end(Json.encodePrettily(whisky));
+    }
+
+    private void getAll(RoutingContext routingContext) {
+        routingContext.response()
+                .putHeader("content-type", "application/json; charset=utf-8")
+                .end(Json.encodePrettily(products.values()));
+    }
+
+
 }
