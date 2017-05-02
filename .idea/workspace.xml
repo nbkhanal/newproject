@@ -2,16 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c880311d-1b28-4e5a-8d0e-b3a8185a2894" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/io/vertx/blog/first/MyFirstVerticle.class" afterPath="$PROJECT_DIR$/target/classes/io/vertx/blog/first/MyFirstVerticle.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/my-first-app-1.0-SNAPSHOT-fat.jar" afterPath="$PROJECT_DIR$/target/my-first-app-1.0-SNAPSHOT-fat.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/my-first-app-1.0-SNAPSHOT.jar" afterPath="$PROJECT_DIR$/target/my-first-app-1.0-SNAPSHOT.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/io/vertx/blog/first/MyFirstVerticle.java" afterPath="$PROJECT_DIR$/src/main/java/io/vertx/blog/first/MyFirstVerticle.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-io.vertx.blog.first.MyFirstVerticleTest.xml" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-io.vertx.blog.first.MyFirstVerticleTest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/surefire-reports/io.vertx.blog.first.MyFirstVerticleTest.txt" afterPath="$PROJECT_DIR$/target/surefire-reports/io.vertx.blog.first.MyFirstVerticleTest.txt" />
     </list>
     <ignored path="my-first-app.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -44,11 +35,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MyFirstVerticle.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="MyFirstVerticle.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/io/vertx/blog/first/MyFirstVerticle.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="691">
-              <caret line="71" column="34" selection-start-line="71" selection-start-column="34" selection-end-line="71" selection-end-column="34" />
+            <state relative-caret-position="300">
+              <caret line="73" column="59" selection-start-line="73" selection-start-column="59" selection-end-line="73" selection-end-column="59" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -66,7 +57,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MyFirstVerticleTest.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="MyFirstVerticleTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/io/vertx/blog/first/MyFirstVerticleTest.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="75">
@@ -115,8 +106,8 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/io/vertx/blog/first/Whisky.java" />
-        <option value="$PROJECT_DIR$/src/main/java/io/vertx/blog/first/MyFirstVerticle.java" />
         <option value="$PROJECT_DIR$/src/main/resources/assets/index.html" />
+        <option value="$PROJECT_DIR$/src/main/java/io/vertx/blog/first/MyFirstVerticle.java" />
       </list>
     </option>
   </component>
@@ -694,12 +685,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1493709777768</updated>
-      <workItem from="1493709784827" duration="3465000" />
+      <workItem from="1493709784827" duration="4025000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3465000" />
+    <option name="totallyTimeSpent" value="4025000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="10" y="47" width="1346" height="701" extended-state="0" />
@@ -782,21 +773,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/io/vertx/blog/first/MyFirstVerticle.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="691">
-          <caret line="71" column="34" selection-start-line="71" selection-start-column="34" selection-end-line="71" selection-end-column="34" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/io/vertx/blog/first/MyFirstVerticleTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
           <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/io/vertx/blog/first/MyFirstVerticle.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="73" column="59" selection-start-line="73" selection-start-column="59" selection-end-line="73" selection-end-column="59" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

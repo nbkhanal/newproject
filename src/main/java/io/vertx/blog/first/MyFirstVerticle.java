@@ -44,6 +44,7 @@ public class MyFirstVerticle extends AbstractVerticle {
       router.get("/api/whiskies").handler(this::getAll);
       router.route("/api/whiskies*").handler(BodyHandler.create());
       router.post("/api/whiskies").handler(this::addOne);
+      router.delete("/api/whiskies/:id").handler(this::deleteOne);
  // Create the HTTP server and pass the "accept" method to the request handler.
  vertx
      .createHttpServer()
@@ -61,6 +62,17 @@ public class MyFirstVerticle extends AbstractVerticle {
          }
      );
 }
+
+    private void deleteOne(RoutingContext routingContext) {
+        String id = routingContext.request().getParam("id");
+        if (id == null) {
+            routingContext.response().setStatusCode(400).end();
+        } else {
+            Integer idAsInteger = Integer.valueOf(id);
+            products.remove(idAsInteger);
+        }
+        routingContext.response().setStatusCode(204).end();
+    }
 
     private void addOne(RoutingContext routingContext) {
         final Whisky whisky = Json.decodeValue(routingContext.getBodyAsString(),
