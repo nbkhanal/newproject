@@ -1,2 +1,4 @@
-io/vertx/blog/first/JDBCClient.class
 io/vertx/blog/first/Whisky.class
+io/vertx/blog/first/test.class
+io/vertx/blog/first/MyFirstVerticle.class
+io/vertx/blog/first/JDBCClient.class
