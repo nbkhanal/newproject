@@ -6,6 +6,8 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -23,7 +25,20 @@
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: io.vertx:vertx-unit:3.0.0" level="project" />
-    <orderEntry type="library" name="Maven: io.vertx:vertx-web:3.0.0" level="project" />
-    <orderEntry type="library" name="Maven: io.vertx:vertx-auth-common:3.0.0" level="project" />
+    <orderEntry type="library" name="Maven: io.vertx:vertx-web:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: io.vertx:vertx-auth-common:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: io.vertx:vertx-mongo-client:3.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-async:3.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.mongodb:bson:3.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-core:3.0.4" level="project" />
+    <orderEntry type="library" name="Maven: mysql:mysql-connector-java:6.0.6" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: de.flapdoodle.embed:de.flapdoodle.embed.mongo:1.50.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: de.flapdoodle.embed:de.flapdoodle.embed.process:1.50.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: commons-io:commons-io:2.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.commons:commons-lang3:3.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: net.java.dev.jna:jna:4.0.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: net.java.dev.jna:jna-platform:4.0.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.commons:commons-compress:1.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.slf4j:slf4j-api:1.7.10" level="project" />
   </component>
 </module>
