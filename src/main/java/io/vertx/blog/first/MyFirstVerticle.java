@@ -7,16 +7,20 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import io.vertx.ext.sql.SQLConnection;
+import io.vertx.ext.sql.UpdateResult;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MyFirstVerticle extends AbstractVerticle {
 
@@ -30,6 +34,21 @@ public class MyFirstVerticle extends AbstractVerticle {
         Whisky talisker = new Whisky("Talisker 57° North", "Scotland, Island");
         products.put(talisker.getId(), talisker);
     }*/
+    private void insert(Whisky whisky, SQLConnection connection, Handler<AsyncResult<Whisky>> next) {
+        String sql = "INSERT INTO Whisky (name, origin) VALUES ?, ?";
+        connection.updateWithParams(sql,
+                new JsonArray().add(whisky.getName()).add(whisky.getOrigin()),
+                (ar) -> {
+                    if (ar.failed()) {
+                        next.handle(Future.failedFuture(ar.cause()));
+                        return;
+                    }
+                    UpdateResult result = ar.result();
+                    // Build a new whisky instance with the generated id.
+                    Whisky w = new Whisky(result.getKeys().getInteger(0), whisky.getName(), whisky.getOrigin());
+                    next.handle(Future.succeededFuture(w));
+                });
+    }
     private void createSomeData(AsyncResult<SQLConnection> result,
                                 Handler<AsyncResult<Void>> next, Future<Void> fut) {
         if (result.failed()) {
@@ -69,7 +88,7 @@ public class MyFirstVerticle extends AbstractVerticle {
                     });
         }
     }
-    /*createSomeData();*/
+
     private void startBackend(Handler<AsyncResult<SQLConnection>> next, Future<Void> fut) {
         io.vertx.ext.jdbc.JDBCClient jdbc = new io.vertx.ext.jdbc.JDBCClient() {
             @Override
@@ -116,6 +135,7 @@ public class MyFirstVerticle extends AbstractVerticle {
       router.route("/api/whiskies*").handler(BodyHandler.create());
       router.post("/api/whiskies").handler(this::addOne);
       router.delete("/api/whiskies/:id").handler(this::deleteOne);
+
  // Create the HTTP server and pass the "accept" method to the request handler.
  vertx
      .createHttpServer()
@@ -156,9 +176,27 @@ public class MyFirstVerticle extends AbstractVerticle {
     }
 
     private void getAll(RoutingContext routingContext) {
-        routingContext.response()
-                .putHeader("content-type", "application/json; charset=utf-8")
-                .end(Json.encodePrettily(products.values()));
+        io.vertx.ext.jdbc.JDBCClient jdbc = new io.vertx.ext.jdbc.JDBCClient() {
+            @Override
+            public io.vertx.ext.jdbc.JDBCClient getConnection(Handler<AsyncResult<SQLConnection>> handler) {
+                return null;
+            }
+
+            @Override
+            public void close() {
+
+            }
+        };
+        jdbc.getConnection(ar -> {
+            SQLConnection connection = ar.result();
+            connection.query("SELECT * FROM Whisky", result -> {
+                List<Whisky> whiskies = result.result().getRows().stream().map(Whisky::new).collect(Collectors.toList());
+                routingContext.response()
+                        .putHeader("content-type", "application/json; charset=utf-8")
+                        .end(Json.encodePrettily(whiskies));
+                connection.close(); // Close the connection
+            });
+        });
     }
 
 }

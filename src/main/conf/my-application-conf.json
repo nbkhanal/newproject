@@ -1,3 +1,5 @@
 {
-  "http.port" : 8082
+  "http.port" : 8082,
+  "url": "jdbc:mysql://localhost/MyWhiskyCollection",
+  "driver_class": "com.mysql.jdbc.Driver"
 }
