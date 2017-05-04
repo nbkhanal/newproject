@@ -10,6 +10,7 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.sql.SQLConnection;
 import io.vertx.ext.sql.UpdateResult;
 import io.vertx.ext.web.Router;
@@ -21,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.mysql.cj.api.xdevapi.DatabaseObject.DbObjectType.COLLECTION;
 
 public class MyFirstVerticle extends AbstractVerticle {
 
@@ -49,44 +52,36 @@ public class MyFirstVerticle extends AbstractVerticle {
                     next.handle(Future.succeededFuture(w));
                 });
     }
-    private void createSomeData(AsyncResult<SQLConnection> result,
-                                Handler<AsyncResult<Void>> next, Future<Void> fut) {
-        if (result.failed()) {
-            fut.fail(result.cause());
-        } else {
-            SQLConnection connection = result.result();
-            connection.execute(
-                    "CREATE TABLE IF NOT EXISTS Whisky (id INTEGER IDENTITY, name varchar(100), " +
-                            "origin varchar(100))",
-                    ar -> {
+    private void createSomeData(Handler<AsyncResult<Void>> next, Future<Void> fut) {
+        Whisky bowmore = new Whisky("Bowmore 15 Years Laimrig", "Scotland, Islay");
+        Whisky talisker = new Whisky("Talisker 57° North", "Scotland, Island");
+        System.out.println(bowmore.toJson());
+        // Do we have data in the collection ?
+        mongo.count(COLLECTION, new JsonObject(), count -> {
+            if (count.succeeded()) {
+                if (count.result() == 0) {
+                    // no whiskies, insert data
+                    mongo.insert(COLLECTION, bowmore.toJson(), ar -> {
                         if (ar.failed()) {
                             fut.fail(ar.cause());
-                            connection.close();
-                            return;
+                        } else {
+                            mongo.insert(COLLECTION, talisker.toJson(), ar2 -> {
+                                if (ar2.failed()) {
+                                    fut.failed();
+                                } else {
+                                    next.handle(Future.<Void>succeededFuture());
+                                }
+                            });
                         }
-                        connection.query("SELECT * FROM Whisky", select -> {
-                            if (select.failed()) {
-                                fut.fail(ar.cause());
-                                connection.close();
-                                return;
-                            }
-                            if (select.result().getNumRows() == 0) {
-                                insert(
-                                        new Whisky("Bowmore 15 Years Laimrig", "Scotland, Islay"),
-                                        connection,
-                                        (v) -> insert(new Whisky("Talisker 57° North", "Scotland, Island"),
-                                                connection,
-                                                (r) -> {
-                                                    next.handle(Future.<Void>succeededFuture());
-                                                    connection.close();
-                                                }));
-                            } else {
-                                next.handle(Future.<Void>succeededFuture());
-                                connection.close();
-                            }
-                        });
                     });
-        }
+                } else {
+                    next.handle(Future.<Void>succeededFuture());
+                }
+            } else {
+                // report the error
+                fut.fail(count.cause());
+            }
+        });
     }
 
     private void startBackend(Handler<AsyncResult<SQLConnection>> next, Future<Void> fut) {
@@ -120,7 +115,8 @@ public class MyFirstVerticle extends AbstractVerticle {
                       + "user=root&password=root")
               .put("driver_class", "com.mysql.jdbc.Driver")
               .put("max_pool_size", 30);
-      JDBCClient jdbc = JDBCClient.createShared(vertx, config(), "MyWhiskyCollection");
+      /*JDBCClient jdbc = JDBCClient.createShared(vertx, config(), "MyWhiskyCollection");*/
+      MongoClient mongo = MongoClient.createShared(vertx, config());
       // Bind "/" to our hello message - so we are still compatible.
       router.route("/").handler(routingContext -> {
         HttpServerResponse response = routingContext.response();
@@ -159,10 +155,9 @@ public class MyFirstVerticle extends AbstractVerticle {
         if (id == null) {
             routingContext.response().setStatusCode(400).end();
         } else {
-            Integer idAsInteger = Integer.valueOf(id);
-            products.remove(idAsInteger);
+            mongo.removeOne(COLLECTION, new JsonObject().put("_id", id),
+                    ar -> routingContext.response().setStatusCode(204).end());
         }
-        routingContext.response().setStatusCode(204).end();
     }
 
     private void addOne(RoutingContext routingContext) {
@@ -175,27 +170,38 @@ public class MyFirstVerticle extends AbstractVerticle {
                 .end(Json.encodePrettily(whisky));
     }
 
+    private void updateOne(RoutingContext routingContext) {
+        final String id = routingContext.request().getParam("id");
+        JsonObject json = routingContext.getBodyAsJson();
+        if (id == null || json == null) {
+            routingContext.response().setStatusCode(400).end();
+        } else {
+            mongo.update(COLLECTION,
+                    new JsonObject().put("_id", id), // Select a unique document
+                    // The update syntax: {$set, the json object containing the fields to update}
+                    new JsonObject()
+                            .put("$set", json),
+                    v -> {
+                        if (v.failed()) {
+                            routingContext.response().setStatusCode(404).end();
+                        } else {
+                            routingContext.response()
+                                    .putHeader("content-type", "application/json; charset=utf-8")
+                                    .end(Json.encodePrettily(
+                                            new Whisky(id, json.getString("name"),
+                                                    json.getString("origin"))));
+                        }
+                    });
+        }
+    }
+
     private void getAll(RoutingContext routingContext) {
-        io.vertx.ext.jdbc.JDBCClient jdbc = new io.vertx.ext.jdbc.JDBCClient() {
-            @Override
-            public io.vertx.ext.jdbc.JDBCClient getConnection(Handler<AsyncResult<SQLConnection>> handler) {
-                return null;
-            }
-
-            @Override
-            public void close() {
-
-            }
-        };
-        jdbc.getConnection(ar -> {
-            SQLConnection connection = ar.result();
-            connection.query("SELECT * FROM Whisky", result -> {
-                List<Whisky> whiskies = result.result().getRows().stream().map(Whisky::new).collect(Collectors.toList());
-                routingContext.response()
-                        .putHeader("content-type", "application/json; charset=utf-8")
-                        .end(Json.encodePrettily(whiskies));
-                connection.close(); // Close the connection
-            });
+        mongo.find(COLLECTION, new JsonObject(), results -> {
+            List<JsonObject> objects = results.result();
+            List<Whisky> whiskies = objects.stream().map(Whisky::new).collect(Collectors.toList());
+            routingContext.response()
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(Json.encodePrettily(whiskies));
         });
     }
 
