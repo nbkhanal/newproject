@@ -24,12 +24,52 @@ public class MyFirstVerticle extends AbstractVerticle {
     // Store our product
     private Map<Integer, Whisky> products = new LinkedHashMap<>();
     // Create some product
-    private void createSomeData() {
+    /*private void createSomeData() {
         Whisky bowmore = new Whisky("Bowmore 15 Years Laimrig", "Scotland, Islay");
         products.put(bowmore.getId(), bowmore);
         Whisky talisker = new Whisky("Talisker 57° North", "Scotland, Island");
         products.put(talisker.getId(), talisker);
+    }*/
+    private void createSomeData(AsyncResult<SQLConnection> result,
+                                Handler<AsyncResult<Void>> next, Future<Void> fut) {
+        if (result.failed()) {
+            fut.fail(result.cause());
+        } else {
+            SQLConnection connection = result.result();
+            connection.execute(
+                    "CREATE TABLE IF NOT EXISTS Whisky (id INTEGER IDENTITY, name varchar(100), " +
+                            "origin varchar(100))",
+                    ar -> {
+                        if (ar.failed()) {
+                            fut.fail(ar.cause());
+                            connection.close();
+                            return;
+                        }
+                        connection.query("SELECT * FROM Whisky", select -> {
+                            if (select.failed()) {
+                                fut.fail(ar.cause());
+                                connection.close();
+                                return;
+                            }
+                            if (select.result().getNumRows() == 0) {
+                                insert(
+                                        new Whisky("Bowmore 15 Years Laimrig", "Scotland, Islay"),
+                                        connection,
+                                        (v) -> insert(new Whisky("Talisker 57° North", "Scotland, Island"),
+                                                connection,
+                                                (r) -> {
+                                                    next.handle(Future.<Void>succeededFuture());
+                                                    connection.close();
+                                                }));
+                            } else {
+                                next.handle(Future.<Void>succeededFuture());
+                                connection.close();
+                            }
+                        });
+                    });
+        }
     }
+    /*createSomeData();*/
     private void startBackend(Handler<AsyncResult<SQLConnection>> next, Future<Void> fut) {
         io.vertx.ext.jdbc.JDBCClient jdbc = new io.vertx.ext.jdbc.JDBCClient() {
             @Override
@@ -53,7 +93,7 @@ public class MyFirstVerticle extends AbstractVerticle {
   @Override
     public void start(Future<Void> fut) {
 
-      createSomeData();
+
      // Create a router object.
      Router router = Router.router(vertx);
       JsonObject config = new JsonObject()
